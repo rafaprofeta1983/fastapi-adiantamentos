@@ -4,16 +4,22 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 
-# Carrega variáveis do arquivo .env
+# Carrega variáveis do .env
 load_dotenv()
 
-# Dados do .env
-DB_SERVER = os.getenv("DB_SERVER")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_DRIVER = os.getenv("DB_DRIVER")
+# Inicializa FastAPI
+app = FastAPI()
 
+# Configura CORS (permite requisições externas)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # troque por domínios específicos em produção
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Função para obter conexão com banco de dados
 def get_connection():
     try:
         conn_str = f"""
@@ -24,23 +30,11 @@ def get_connection():
             PWD={os.getenv("DB_PASSWORD")};
             TrustServerCertificate=yes;
         """
-        conn = pyodbc.connect(conn_str, autocommit=True)
-        return conn
+        return pyodbc.connect(conn_str, autocommit=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao conectar ao banco: {str(e)}")
 
-# Inicializa o FastAPI
-app = FastAPI()
-
-# Permite chamadas externas (como do OutSystems)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # em produção, troque "*" por domínio específico
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+# Endpoint de adiantamentos
 @app.get("/adiantamentos")
 def listar_adiantamentos():
     try:
@@ -61,21 +55,18 @@ def listar_adiantamentos():
                 SaldoADescontar
             FROM vw_90_TableItemAdiantamentoTitulo AS ADTOITEM
             LEFT JOIN vw_90_TableAdiantamentoTitulo AS ADTO
-            ON ADTOITEM.AdiantamentoTitulo_Id = ADTO.Id
+                ON ADTOITEM.AdiantamentoTitulo_Id = ADTO.Id
             LEFT JOIN empresa_financeiro AS EMP
-            ON ADTOITEM.Empresa_Id = EMP.Id
+                ON ADTOITEM.Empresa_Id = EMP.Id
             WHERE 
-            Origem = 'Titulo'
-            AND YEAR(ADTOITEM.Data) > 2021
-            AND SaldoADescontar > 0.10
-
-            
+                Origem = 'Titulo'
+                AND YEAR(ADTOITEM.Data) > 2021
+                AND SaldoADescontar > 0.10
         """
 
         cursor.execute(query)
         rows = cursor.fetchall()
-
-        colunas = [column[0] for column in cursor.description]
+        colunas = [col[0] for col in cursor.description]
         resultado = [dict(zip(colunas, row)) for row in rows]
 
         return resultado
