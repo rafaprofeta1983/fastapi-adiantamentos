@@ -1,5 +1,9 @@
 FROM python:3.12-slim
 
+# Dockerfile
+COPY .env /app/.env
+
+
 # Instalar dependências necessárias para adicionar repositórios
 RUN apt-get update && \
     apt-get install -y curl gnupg2 apt-transport-https ca-certificates
