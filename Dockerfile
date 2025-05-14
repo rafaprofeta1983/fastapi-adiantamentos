@@ -1,20 +1,18 @@
-# Usa uma imagem base do Python
 FROM python:3.12-slim
 
-# Cria e define o diretório de trabalho
-WORKDIR /app
+# Instalar dependências necessárias para adicionar repositórios
+RUN apt-get update && \
+    apt-get install -y curl gnupg2 apt-transport-https ca-certificates
 
-# Copia os arquivos do projeto para o diretório de trabalho
-COPY . /app
+# Adicionar chave e repositório da Microsoft
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
-# Instala as dependências
-RUN pip install --no-cache-dir -r requirements.txt
+# Atualizar repositórios
+RUN apt-get update
 
-# Expõe a porta 8000 (padrão do Uvicorn)
-EXPOSE 8000
+# Instalar msodbcsql17 com o EULA aceito e forçando a sobrescrição de pacotes conflitantes
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17 -o Dpkg::Options::="--force-overwrite" && \
+    rm -rf /var/lib/apt/lists/*
 
-# Define a variável de ambiente para o uvicorn
-ENV PYTHONUNBUFFERED=1
-
-# Comando para rodar a aplicação
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Outras instruções do Dockerfile
