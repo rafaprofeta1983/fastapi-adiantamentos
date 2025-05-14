@@ -2,7 +2,7 @@ name: Stop API
 
 on:
   schedule:
-    - cron: '0 12 * * *' # 09h BRT = 12h UTC
+    - cron: '0 2 * * 2-6' # 23h BRT = 02h UTC do dia seguinte (terça a sábado)
   workflow_dispatch:
 
 jobs:
