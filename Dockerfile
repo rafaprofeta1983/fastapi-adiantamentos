@@ -1,40 +1,18 @@
 FROM python:3.12-slim
 
+# Instalar dependências necessárias para adicionar repositórios
 RUN apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql17 -o Dpkg::Options::="--force-overwrite" && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y curl gnupg2 apt-transport-https ca-certificates
 
-# Instala dependências básicas
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg2 \
-    apt-transport-https \
-    ca-certificates \
-    unixodbc \
-    unixodbc-dev \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Adiciona repositório da Microsoft para o ODBC Driver 17
+# Adicionar chave e repositório da Microsoft
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
-# Atualiza e instala o msodbcsql17
-RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 && rm -rf /var/lib/apt/lists/*
+# Atualizar repositórios
+RUN apt-get update
 
-# Cria o diretório de trabalho
-WORKDIR /app
+# Instalar msodbcsql17 com o EULA aceito e forçando a sobrescrição de pacotes conflitantes
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17 -o Dpkg::Options::="--force-overwrite" && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copia o conteúdo do projeto
-COPY . .
-
-# Instala as dependências Python
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-# Expõe a porta usada pelo Uvicorn
-EXPOSE 8000
-
-# Comando para iniciar o servidor
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Outras instruções do Dockerfile
