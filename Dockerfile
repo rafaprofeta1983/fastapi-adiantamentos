@@ -1,5 +1,9 @@
 FROM python:3.12-slim
 
+RUN apt-get update && \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql17 -o Dpkg::Options::="--force-overwrite" && \
+    rm -rf /var/lib/apt/lists/*
+
 # Instala dependências básicas
 RUN apt-get update && apt-get install -y \
     curl \
