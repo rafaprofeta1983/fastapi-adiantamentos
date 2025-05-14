@@ -1,0 +1,17 @@
+name: Stop API
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # 09h BRT = 12h UTC
+  workflow_dispatch:
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Railway Down
+        uses: railwayapp/cli-action@v2
+        with:
+          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
+          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
+          command: down
