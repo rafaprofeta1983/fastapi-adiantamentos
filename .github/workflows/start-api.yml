@@ -17,4 +17,4 @@ jobs:
       - name: Subir API no Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service production
+        run: railway up --service fastapi-adiantamentos
