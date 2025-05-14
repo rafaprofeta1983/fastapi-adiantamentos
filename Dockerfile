@@ -1,6 +1,15 @@
 # Usa imagem base com Python
 FROM python:3.12-slim
 
+# Instala pacotes necessários para o pyodbc
+RUN apt-get update && \
+    apt-get install -y \
+    unixodbc \
+    unixodbc-dev \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Define diretório de trabalho
 WORKDIR /app
 
