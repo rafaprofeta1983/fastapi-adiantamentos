@@ -2,16 +2,19 @@ name: Stop API
 
 on:
   schedule:
-    - cron: '0 2 * * 2-6'  # 02h UTC = 23h BRT (do dia anterior)
+    - cron: '0 2 * * 2-6'  # 23h BRT = 02h UTC do dia seguinte
   workflow_dispatch:
 
 jobs:
   stop:
     runs-on: ubuntu-latest
     steps:
-      - name: Railway Down
-        uses: railwayapp/cli-action@v1
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          command: down
+      - name: Instalar Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
+
+      - name: Parar API no Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway down --yes --service production
