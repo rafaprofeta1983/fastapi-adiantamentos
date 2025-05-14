@@ -2,7 +2,7 @@ name: Start API
 
 on:
   schedule:
-    - cron: '0 20 * * 1-5' # 17h BRT = 20h UTC, de segunda a sexta
+    - cron: '0 20 * * 1-5'  # 20h UTC = 17h BRT
   workflow_dispatch:
 
 jobs:
