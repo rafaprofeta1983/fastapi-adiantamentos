@@ -2,16 +2,19 @@ name: Start API
 
 on:
   schedule:
-    - cron: '0 20 * * 1-5'  # 20h UTC = 17h BRT
+    - cron: '0 20 * * 1-5'  # 17h BRT = 20h UTC
   workflow_dispatch:
 
 jobs:
   start:
     runs-on: ubuntu-latest
     steps:
-      - name: Railway Up
-        uses: railwayapp/cli-action@v1
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          command: up
+      - name: Instalar Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
+
+      - name: Subir API no Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --yes --service production
