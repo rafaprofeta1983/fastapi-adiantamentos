@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 # Carrega variáveis do .env
 load_dotenv()
 
+port = int(os.getenv("PORT", 8000))
+uvicorn.run(app, host="0.0.0.0", port=port)
+
+
 # Inicializa FastAPI
 app = FastAPI()
 
