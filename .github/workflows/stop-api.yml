@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Railway Down
-        uses: railwayapp/cli-action@1.2.10
+        uses: railwayapp/cli-action@v1
         with:
           railwayToken: ${{ secrets.RAILWAY_TOKEN }}
           projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
