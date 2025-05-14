@@ -1,12 +1,12 @@
 FROM python:3.12-slim
 
-# Instalar dependências necessárias para adicionar repositórios
-RUN apt-get update && \
-    apt-get install -y curl gnupg2 apt-transport-https ca-certificates
-
-# Adicionar chave e repositório da Microsoft
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update && apt-get install -y \
+    curl gnupg2 apt-transport-https ca-certificates \
+    build-essential unixodbc-dev gcc g++ \
+ && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+ && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+ && apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
+ && rm -rf /var/lib/apt/lists/*
 
 # Atualizar repositórios
 RUN apt-get update
