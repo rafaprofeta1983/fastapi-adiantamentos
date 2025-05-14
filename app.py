@@ -1,17 +1,45 @@
-# Usa imagem base com Python
-FROM python:3.12-slim
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import pyodbc
+import os
+from dotenv import load_dotenv
 
-# Define diretório de trabalho
-WORKDIR /app
+app = FastAPI()
 
-# Copia arquivos para dentro da imagem
-COPY . .
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Instala dependências
-RUN pip install --no-cache-dir -r requirements.txt
+load_dotenv()
 
-# Expõe a porta usada pelo Uvicorn
-EXPOSE 8000
+# Banco de dados
+def get_connection():
+    try:
+        conn_str = f"""
+            DRIVER={{{os.getenv("DB_DRIVER")}}};
+            SERVER={os.getenv("DB_SERVER")};
+            DATABASE={os.getenv("DB_NAME")};
+            UID={os.getenv("DB_USER")};
+            PWD={os.getenv("DB_PASSWORD")}};
+            TrustServerCertificate=yes;
+        """
+        return pyodbc.connect(conn_str, autocommit=True)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao conectar ao banco: {str(e)}")
 
-# Comando para iniciar o servidor FastAPI
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Rota
+@app.get("/adiantamentos")
+def listar_adiantamentos():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT TOP 10 * FROM sua_tabela")
+        colunas = [col[0] for col in cursor.description]
+        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
