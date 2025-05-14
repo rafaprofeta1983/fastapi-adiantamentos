@@ -16,3 +16,5 @@ RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17 -o Dpkg::Options::="--force-ove
     rm -rf /var/lib/apt/lists/*
 
 # Outras instruções do Dockerfile
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
