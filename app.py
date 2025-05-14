@@ -13,10 +13,7 @@ def obter_ip_externo():
     except Exception as e:
         return f"Erro ao obter IP externo: {str(e)}"
 
-@app.get("/ip")
-def mostrar_ip():
-    ip_externo = obter_ip_externo()
-    return {"ip_externo": ip_externo}
+
 
 
 # Inicializa FastAPI
@@ -89,4 +86,8 @@ def listar_adiantamentos():
         raise HTTPException(status_code=500, detail=str(e))
 @app.get("/")
 def read_root():
-    return {"status": "API rodando com sucesso"}        
+    return {"status": "API rodando com sucesso"}  
+@app.get("/ip")
+def mostrar_ip():
+    ip_externo = obter_ip_externo()
+    return {"ip_externo": ip_externo}    
