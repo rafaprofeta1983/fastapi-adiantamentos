@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import pyodbc
 import os
-import uvicorn
 from dotenv import load_dotenv
 
 # Inicializa FastAPI
@@ -11,13 +10,7 @@ app = FastAPI()
 # Carrega variáveis do .env
 load_dotenv()
 
-port = int(os.getenv("PORT", 8000))
-uvicorn.run(app, host="0.0.0.0", port=port)
-
-
-
-
-# Configura CORS (permite requisições externas)
+# Configura CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # troque por domínios específicos em produção
