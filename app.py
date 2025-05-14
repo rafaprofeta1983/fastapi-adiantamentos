@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import pyodbc
 import os
+import uvicorn
 from dotenv import load_dotenv
 
 # Carrega variáveis do .env
