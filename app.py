@@ -3,6 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 import pyodbc
 import os
 from dotenv import load_dotenv
+import requests
+
+def obter_ip_externo():
+    try:
+        response = requests.get("https://httpbin.org/ip")
+        ip = response.json()["origin"]
+        return ip
+    except Exception as e:
+        return f"Erro ao obter IP externo: {str(e)}"
+
 
 # Inicializa FastAPI
 app = FastAPI()
