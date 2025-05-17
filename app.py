@@ -107,3 +107,13 @@ def get_external_ip():
             status_code=500,
             content={"ip_externo": f"Erro ao obter IP externo: {str(e)}"}
         )
+@app.get("/test-db")
+def testar_conexao():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 AS resultado")
+        resultado = cursor.fetchone()
+        return {"conexao": "sucesso", "resultado": resultado[0]}
+    except Exception as e:
+        return {"conexao": "falha", "erro": str(e)}        
