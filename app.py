@@ -35,16 +35,23 @@ app.add_middleware(
 # Função para obter conexão com banco de dados
 def get_connection():
     try:
-        conn_str = f"""
-            DRIVER={{{os.getenv("DB_DRIVER")}}};
-            SERVER={os.getenv("DB_SERVER")};
-            DATABASE={os.getenv("DB_NAME")};
-            UID={os.getenv("DB_USER")};
-            PWD={os.getenv("DB_PASSWORD")};
-            TrustServerCertificate=yes;
-        """
+        driver = os.getenv("DB_DRIVER", "").strip()
+        server = os.getenv("DB_SERVER")
+        database = os.getenv("DB_NAME")
+        username = os.getenv("DB_USER")
+        password = os.getenv("DB_PASSWORD")
+
+        conn_str = (
+            f"DRIVER={{{driver}}};"
+            f"SERVER={server};"
+            f"DATABASE={database};"
+            f"UID={username};"
+            f"PWD={password};"
+            "TrustServerCertificate=yes;"
+        )
         return pyodbc.connect(conn_str, autocommit=True)
     except Exception as e:
+        print(f"[ERRO] Conexão falhou: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao conectar ao banco: {str(e)}")
 
 # Endpoint de adiantamentos
