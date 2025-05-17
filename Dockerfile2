@@ -1,0 +1,16 @@
+FROM linuxserver/wireguard
+
+# Expõe a porta UDP padrão do WireGuard
+EXPOSE 51820/udp
+
+# Variáveis de ambiente recomendadas (pode customizar no fly.toml)
+ENV PUID=1000
+ENV PGID=1000
+ENV TZ=America/Sao_Paulo
+ENV SERVERURL=0.0.0.0  # no fly.io vamos sobrescrever via fly.toml
+ENV SERVERPORT=51820
+ENV PEERS=1
+ENV PEERDNS=1.1.1.1
+ENV INTERNAL_SUBNET=10.13.13.0
+ENV ALLOWEDIPS=0.0.0.0/0
+ENV LOG_CONFS=true
