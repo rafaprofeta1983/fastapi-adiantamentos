@@ -1,22 +1,32 @@
-# fly.toml app configuration file generated for fastapi-adiantamentos-green-silence-5369 on 2025-05-15T18:21:37-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+app = "wireguard-vpn"
 
-app = 'fastapi-adiantamentos-green-silence-5369'
-primary_region = 'gru'
+primary_region = "gru"
 
 [build]
+  image = "docker.io/linuxserver/wireguard"
 
-[http_service]
-  internal_port = 8000
-  force_https = true
-  auto_stop_machines = 'stop'
-  auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+[env]
+  PUID = "1000"
+  PGID = "1000"
+  TZ = "America/Sao_Paulo"
+  SERVERURL = "wireguard-vpn.fly.dev"  # Pode deixar o host da sua app
+  SERVERPORT = "51820"
+  PEERS = "1"
+  PEERDNS = "1.1.1.1"
+  INTERNAL_SUBNET = "10.13.13.0"
+  ALLOWEDIPS = "0.0.0.0/0"
+  LOG_CONFS = "true"
 
-[[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
+[[services]]
+  internal_port = 51820
+  protocol = "udp"
+
+  [[services.ports]]
+    port = 51820
+    handlers = ["udp"]
+
+  [[services.tcp_checks]]
+    interval = 10000
+    timeout = 2000
+    grace_period = "10s"
+    restart_limit = 0
