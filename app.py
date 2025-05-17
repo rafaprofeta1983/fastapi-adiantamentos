@@ -6,17 +6,6 @@ from dotenv import load_dotenv
 import requests
 from fastapi.responses import JSONResponse
 
-def obter_ip_externo():
-    try:
-        response = requests.get("https://httpbin.org/ip")
-        ip = response.json()["origin"]
-        return ip
-    except Exception as e:
-        return f"Erro ao obter IP externo: {str(e)}"
-
-
-
-
 # Inicializa FastAPI
 app = FastAPI()
 
@@ -92,9 +81,11 @@ def listar_adiantamentos():
         return resultado
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/")
 def read_root():
-    return {"status": "API rodando com sucesso"}  
+    return {"status": "API rodando com sucesso"}
+
 @app.get("/ip")
 def get_external_ip():
     try:
@@ -107,6 +98,7 @@ def get_external_ip():
             status_code=500,
             content={"ip_externo": f"Erro ao obter IP externo: {str(e)}"}
         )
+
 @app.get("/test-db")
 def testar_conexao():
     try:
@@ -116,4 +108,4 @@ def testar_conexao():
         resultado = cursor.fetchone()
         return {"conexao": "sucesso", "resultado": resultado[0]}
     except Exception as e:
-        return {"conexao": "falha", "erro": str(e)}        
+        return {"conexao": "falha", "erro": str(e)}
