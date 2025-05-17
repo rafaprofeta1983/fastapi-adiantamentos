@@ -4,6 +4,7 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 import requests
+from fastapi.responses import JSONResponse
 
 def obter_ip_externo():
     try:
@@ -88,6 +89,14 @@ def listar_adiantamentos():
 def read_root():
     return {"status": "API rodando com sucesso"}  
 @app.get("/ip")
-def mostrar_ip():
-    ip_externo = obter_ip_externo()
-    return {"ip_externo": ip_externo}    
+def get_external_ip():
+    try:
+        response = requests.get("https://api64.ipify.org?format=json", timeout=5)
+        response.raise_for_status()
+        ip_data = response.json()
+        return {"ip_externo": ip_data.get("ip", "IP não encontrado")}
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"ip_externo": f"Erro ao obter IP externo: {str(e)}"}
+        )
